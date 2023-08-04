@@ -2,7 +2,7 @@
 Quantization for chess piece square tables for pesto and other tables
 
 ##Configurations  
-```
+```cs
 private static readonly int[][] PstsArray = //your psts of choice already set to pesto psts
 
 //                           mg:  P    K    B    R    Q    K  eg: P    K    B    R    Q     K
@@ -13,7 +13,7 @@ private static readonly float commpressAmount = // absolute highset value in you
 ##Unpacking 
 to unpack in your own code you can just copy the UnpackToInt function.  
 but if you want to make it more compact you can unpack this way:
-```
+```cs
 int[] unpackedPsts = new int[64 * 12];
 for (int i = 0; i < 64 * 12; i++)
 {
