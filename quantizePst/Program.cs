@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 
 namespace quantizePst
@@ -150,10 +151,12 @@ namespace quantizePst
         };
         
         private static readonly int[][] pestoArray = {mg_pawn_table, mg_knight_table, mg_bishop_table, mg_rook_table, mg_queen_table, mg_king_table, eg_pawn_table, eg_knight_table, eg_bishop_table, eg_rook_table, eg_queen_table, eg_king_table};
-
+        //                           mg:  P    K    B    R    Q    K  eg: P    K    B    R    Q     K
+        private static int[] pieceVal = {100, 320, 330, 500, 900, 20000, 100, 320, 330, 500, 900, 20000};
         private static float commpressAmount = 1.461f;
+        
         // Function to quantize sbyte arrays to decimal array
-        public static decimal[] QuantizeToDecimal(sbyte[][] inputArrays)
+        public static decimal[] QuantizeToDecimal(byte[][] inputArrays)
         {
             var numArrays = inputArrays.Length;
             var numValues = inputArrays[0].Length;
@@ -166,8 +169,8 @@ namespace quantizePst
                 for (var j = 0; j < numArrays; j++)
                 {
                     // Convert sbyte to uint to ensure 8-bit values are properly handled.
-                    sbyte temp = inputArrays[j][i];
-                    BigInteger value = (uint)(temp + 128);
+                    byte temp = inputArrays[j][i];
+                    BigInteger value = temp;
                     packedValue |= value << (j * 8);
                 }
 
@@ -178,61 +181,50 @@ namespace quantizePst
         }
 
         // Function to unpack decimal array to sbyte arrays
-        public static sbyte[][] UnpackToSbyte(decimal[] quantizedArray)
+        public static int[][] UnpackToInt(decimal[] quantizedArray)
         {
             var numValues = quantizedArray.Length;
             var numArrays = 12; // Assuming 8 bytes per decimal
 
-            var unpackedArrays = new sbyte[numArrays][];
+            var unpackedArrays = new int[numArrays][];
 
             for (var j = 0; j < numArrays; j++)
             {
-                unpackedArrays[j] = new sbyte[numValues];
+                unpackedArrays[j] = new int[numValues];
 
                 for (var i = 0; i < numValues; i++)
                 {
                     BigInteger packedValue = (BigInteger)quantizedArray[i];
-                    var value = (sbyte)(((packedValue >> (j * 8)) & 255) - 128);
-                    unpackedArrays[j][i] = (sbyte) value;
+                    var value = Math.Round((int)((packedValue >> (j * 8)) & 255) * commpressAmount);
+                    unpackedArrays[j][i] = (int) value;
                 }
             }
 
             return unpackedArrays;
         }
-
-        public static sbyte[] ConvertIntArrayToSbyteArray(int[] intArray)
+        public static int[] getNewPieceValues(int[] pieceVal)
         {
-            var sbyteArray = new sbyte[intArray.Length];
-
-            for (var i = 0; i < intArray.Length; i++)
+            int[] newPieceVal = new int[pieceVal.Length];
+            for (int i = 0; i < newPieceVal.Length; i++)
             {
-                var intValue = intArray[i] / commpressAmount;
-
-                // Ensure the value is within the valid range of sbyte before converting
-                if (intValue >= sbyte.MinValue && intValue <= sbyte.MaxValue)
-                {
-                    sbyteArray[i] = (sbyte)intValue;
-                }
-                else
-                {
-                    // Handle values outside the valid range by clamping to the nearest valid value.
-                    if (intValue < sbyte.MinValue)
-                        sbyteArray[i] = sbyte.MinValue;
-                    else
-                        sbyteArray[i] = sbyte.MaxValue;
-                }
+                 newPieceVal[i] = pieceVal[i] - pestoArray[i].Min();
             }
 
-            return sbyteArray;
+            return newPieceVal;
         }
-
         public static void Main(string[] args)
         {
-            var sbytePestoArray = new sbyte[pestoArray.Length][];
-            for (var i = 0; i < pestoArray.Length; i++) sbytePestoArray[i] = ConvertIntArrayToSbyteArray(pestoArray[i]);
-
-            var quantizedArray = QuantizeToDecimal(sbytePestoArray);
-            var unpackedArray = UnpackToSbyte(quantizedArray);
+            byte[][] bytePestoArray = new byte[pestoArray.Length][];
+            for (int i = 0; i < bytePestoArray.Length; i++)
+            {
+                bytePestoArray[i] = new byte[pestoArray[i].Length];
+                for (int j = 0; j < bytePestoArray[i].Length; j++)
+                {
+                    bytePestoArray[i][j] = (byte)((pestoArray[i][j] - pestoArray[i].Min()) / commpressAmount) ;
+                }
+            }
+            var quantizedArray = QuantizeToDecimal(bytePestoArray);
+            var unpackedArray = UnpackToInt(quantizedArray);
 
             Console.WriteLine("quantized array:");
             for (var i = 0; i < quantizedArray.Length; i++)
@@ -245,7 +237,7 @@ namespace quantizePst
             for (var i = 0; i < unpackedArray.Length; i++)
             {
                 Console.WriteLine("Array {0}:", i);
-                for (var j = 0; j < unpackedArray[i].Length; j++) Console.Write("{0} ", unpackedArray[i][j] * commpressAmount);
+                for (var j = 0; j < unpackedArray[i].Length; j++) Console.Write("{0} ", unpackedArray[i][j]);
                 Console.WriteLine();
             }
 
@@ -255,6 +247,13 @@ namespace quantizePst
                 Console.WriteLine("Array {0}:", i);
                 for (var j = 0; j < pestoArray[i].Length; j++) Console.Write("{0} ", pestoArray[i][j]);
                 Console.WriteLine();
+            }
+
+            pieceVal = getNewPieceValues(pieceVal);
+            Console.Write("new piece values: ");
+            for (int i = 0; i < pieceVal.Length; i++)
+            {
+                Console.Write("{0}, ", pieceVal[i]);
             }
         }
     }
