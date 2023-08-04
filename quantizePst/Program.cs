@@ -6,7 +6,7 @@ namespace quantizePst
 {
     internal class Program
     {
-        private static int[] mg_pawn_table =
+        private static readonly int[] mg_pawn_table =
         {
             0, 0, 0, 0, 0, 0, 0, 0,
             98, 134, 61, 95, 68, 126, 34, -11,
@@ -18,7 +18,7 @@ namespace quantizePst
             0, 0, 0, 0, 0, 0, 0, 0
         };
 
-        private static int[] eg_pawn_table =
+        private static readonly int[] eg_pawn_table =
         {
             0, 0, 0, 0, 0, 0, 0, 0,
             178, 173, 158, 134, 147, 132, 165, 187,
@@ -30,7 +30,7 @@ namespace quantizePst
             0, 0, 0, 0, 0, 0, 0, 0
         };
 
-        private static int[] mg_knight_table =
+        private static readonly int[] mg_knight_table =
         {
             -167, -89, -34, -49, 61, -97, -15, -107,
             -73, -41, 72, 36, 23, 62, 7, -17,
@@ -42,7 +42,7 @@ namespace quantizePst
             -105, -21, -58, -33, -17, -28, -19, -23
         };
 
-        private static int[] eg_knight_table =
+        private static readonly int[] eg_knight_table =
         {
             -58, -38, -13, -28, -31, -27, -63, -99,
             -25, -8, -25, -2, -9, -25, -24, -52,
@@ -54,7 +54,7 @@ namespace quantizePst
             -29, -51, -23, -15, -22, -18, -50, -64
         };
 
-        private static int[] mg_bishop_table =
+        private static readonly int[] mg_bishop_table =
         {
             -29, 4, -82, -37, -25, -42, 7, -8,
             -26, 16, -18, -13, 30, 59, 18, -47,
@@ -66,7 +66,7 @@ namespace quantizePst
             -33, -3, -14, -21, -13, -12, -39, -21
         };
 
-        private static int[] eg_bishop_table =
+        private static readonly int[] eg_bishop_table =
         {
             -14, -21, -11, -8, -7, -9, -17, -24,
             -8, -4, 7, -12, -3, -13, -4, -14,
@@ -78,7 +78,7 @@ namespace quantizePst
             -23, -9, -23, -5, -9, -16, -5, -17
         };
 
-        private static int[] mg_rook_table =
+        private static readonly int[] mg_rook_table =
         {
             32, 42, 32, 51, 63, 9, 31, 43,
             27, 32, 58, 62, 80, 67, 26, 44,
@@ -90,7 +90,7 @@ namespace quantizePst
             -19, -13, 1, 17, 16, 7, -37, -26
         };
 
-        private static int[] eg_rook_table =
+        private static readonly int[] eg_rook_table =
         {
             13, 10, 18, 15, 12, 12, 8, 5,
             11, 13, 13, 11, -3, 3, 8, 3,
@@ -102,7 +102,7 @@ namespace quantizePst
             -9, 2, 3, -1, -5, -13, 4, -20
         };
 
-        private static int[] mg_queen_table =
+        private static readonly int[] mg_queen_table =
         {
             -28, 0, 29, 12, 59, 44, 43, 45,
             -24, -39, -5, 1, -16, 57, 28, 54,
@@ -114,7 +114,7 @@ namespace quantizePst
             -1, -18, -9, 10, -15, -25, -31, -50
         };
 
-        private static int[] eg_queen_table =
+        private static readonly int[] eg_queen_table =
         {
             -9, 22, 22, 27, 27, 19, 10, 20,
             -17, 20, 32, 41, 58, 25, 30, 0,
@@ -126,7 +126,7 @@ namespace quantizePst
             -33, -28, -22, -43, -5, -32, -20, -41
         };
 
-        private static int[] mg_king_table =
+        private static readonly int[] mg_king_table =
         {
             -65, 23, 16, -15, -56, -34, 2, 13,
             29, -1, -20, -7, -8, -4, -38, -29,
@@ -138,7 +138,7 @@ namespace quantizePst
             -15, 36, 12, -54, 8, -28, 24, 14
         };
 
-        private static int[] eg_king_table =
+        private static readonly int[] eg_king_table =
         {
             -74, -35, -18, -18, -11, 15, 4, -17,
             -12, 17, 14, 17, 17, 38, 23, 11,
@@ -149,12 +149,17 @@ namespace quantizePst
             -27, -11, 4, 13, 14, 4, -5, -17,
             -53, -34, -21, -11, -28, -14, -24, -43
         };
-        
-        private static readonly int[][] pestoArray = {mg_pawn_table, mg_knight_table, mg_bishop_table, mg_rook_table, mg_queen_table, mg_king_table, eg_pawn_table, eg_knight_table, eg_bishop_table, eg_rook_table, eg_queen_table, eg_king_table};
+
+        private static readonly int[][] PstsArray =
+        {
+            mg_pawn_table, mg_knight_table, mg_bishop_table, mg_rook_table, mg_queen_table, mg_king_table,
+            eg_pawn_table, eg_knight_table, eg_bishop_table, eg_rook_table, eg_queen_table, eg_king_table
+        };
+
         //                           mg:  P    K    B    R    Q    K  eg: P    K    B    R    Q     K
-        private static int[] pieceVal = {100, 320, 330, 500, 900, 20000, 100, 320, 330, 500, 900, 20000};
-        private static float commpressAmount = 1.461f;
-        
+        private static int[] pieceVal = { 100, 320, 330, 500, 900, 20000, 100, 320, 330, 500, 900, 20000 };
+        private static readonly float commpressAmount = 1.461f;
+
         // Function to quantize sbyte arrays to decimal array
         public static decimal[] QuantizeToDecimal(byte[][] inputArrays)
         {
@@ -169,7 +174,7 @@ namespace quantizePst
                 for (var j = 0; j < numArrays; j++)
                 {
                     // Convert sbyte to uint to ensure 8-bit values are properly handled.
-                    byte temp = inputArrays[j][i];
+                    var temp = inputArrays[j][i];
                     BigInteger value = temp;
                     packedValue |= value << (j * 8);
                 }
@@ -180,11 +185,12 @@ namespace quantizePst
             return quantizedArray;
         }
 
+        // Assuming 8 bytes per decimal
         // Function to unpack decimal array to sbyte arrays
         public static int[][] UnpackToInt(decimal[] quantizedArray)
         {
             var numValues = quantizedArray.Length;
-            var numArrays = 12; // Assuming 8 bytes per decimal
+            var numArrays = PstsArray.Length;
 
             var unpackedArrays = new int[numArrays][];
 
@@ -194,35 +200,34 @@ namespace quantizePst
 
                 for (var i = 0; i < numValues; i++)
                 {
-                    BigInteger packedValue = (BigInteger)quantizedArray[i];
-                    var value = Math.Round((int)((packedValue >> (j * 8)) & 255) * commpressAmount);
-                    unpackedArrays[j][i] = (int) value;
+                    var value = (int)(((BigInteger)quantizedArray[i] >> (j * 8)) & 255) * commpressAmount;
+                    unpackedArrays[j][i] = (int)value;
                 }
             }
 
             return unpackedArrays;
         }
+
+        // Function to get new piece values so that the psts minimum value is 0
         public static int[] getNewPieceValues(int[] pieceVal)
         {
-            int[] newPieceVal = new int[pieceVal.Length];
-            for (int i = 0; i < newPieceVal.Length; i++)
-            {
-                 newPieceVal[i] = pieceVal[i] - pestoArray[i].Min();
-            }
+            var newPieceVal = new int[pieceVal.Length];
+            for (var i = 0; i < newPieceVal.Length; i++) newPieceVal[i] = pieceVal[i] - PstsArray[i].Min();
 
             return newPieceVal;
         }
+
         public static void Main(string[] args)
         {
-            byte[][] bytePestoArray = new byte[pestoArray.Length][];
-            for (int i = 0; i < bytePestoArray.Length; i++)
+            var bytePestoArray = new byte[PstsArray.Length][];
+            for (var i = 0; i < bytePestoArray.Length; i++)
             {
-                bytePestoArray[i] = new byte[pestoArray[i].Length];
-                for (int j = 0; j < bytePestoArray[i].Length; j++)
-                {
-                    bytePestoArray[i][j] = (byte)((pestoArray[i][j] - pestoArray[i].Min()) / commpressAmount) ;
-                }
+                bytePestoArray[i] = new byte[PstsArray[i].Length];
+                for (var j = 0; j < bytePestoArray[i].Length; j++)
+                    // compressing the values by dividing by 1.461 and then casting to byte
+                    bytePestoArray[i][j] = (byte)((PstsArray[i][j] - PstsArray[i].Min()) / commpressAmount);
             }
+
             var quantizedArray = QuantizeToDecimal(bytePestoArray);
             var unpackedArray = UnpackToInt(quantizedArray);
 
@@ -242,19 +247,16 @@ namespace quantizePst
             }
 
             Console.WriteLine("\n\nOriginal array:");
-            for (var i = 0; i < pestoArray.Length; i++)
+            for (var i = 0; i < PstsArray.Length; i++)
             {
                 Console.WriteLine("Array {0}:", i);
-                for (var j = 0; j < pestoArray[i].Length; j++) Console.Write("{0} ", pestoArray[i][j]);
+                for (var j = 0; j < PstsArray[i].Length; j++) Console.Write("{0} ", PstsArray[i][j]);
                 Console.WriteLine();
             }
 
             pieceVal = getNewPieceValues(pieceVal);
             Console.Write("new piece values: ");
-            for (int i = 0; i < pieceVal.Length; i++)
-            {
-                Console.Write("{0}, ", pieceVal[i]);
-            }
+            for (var i = 0; i < pieceVal.Length; i++) Console.Write("{0}, ", pieceVal[i]);
         }
     }
 }
