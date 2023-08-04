@@ -157,7 +157,7 @@ namespace quantizePst
         };
 
         //                           mg:  P    K    B    R    Q    K  eg: P    K    B    R    Q     K
-        private static int[] pieceVal = { 100, 320, 330, 500, 900, 20000, 100, 320, 330, 500, 900, 20000 };
+        private static int[] pieceVal = {100, 350, 350, 525, 1000, 30000, 100, 350, 350, 525, 1000, 30000};
         private static readonly float commpressAmount = 1.461f;
 
         // Function to quantize sbyte arrays to decimal array
@@ -212,7 +212,7 @@ namespace quantizePst
         public static int[] getNewPieceValues(int[] pieceVal)
         {
             var newPieceVal = new int[pieceVal.Length];
-            for (var i = 0; i < newPieceVal.Length; i++) newPieceVal[i] = pieceVal[i] - PstsArray[i].Min();
+            for (var i = 0; i < newPieceVal.Length; i++) newPieceVal[i] = pieceVal[i] + PstsArray[i].Min();
 
             return newPieceVal;
         }
