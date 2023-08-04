@@ -159,6 +159,7 @@ namespace quantizePst
         //                           mg:  P    K    B    R    Q    K  eg: P    K    B    R    Q     K
         private static int[] pieceVal = {100, 350, 350, 525, 1000, 30000, 100, 350, 350, 525, 1000, 30000};
         private static readonly float commpressAmount = 1.461f;
+        private static int min;
 
         // Function to quantize sbyte arrays to decimal array
         public static decimal[] QuantizeToDecimal(byte[][] inputArrays)
@@ -200,7 +201,7 @@ namespace quantizePst
 
                 for (var i = 0; i < numValues; i++)
                 {
-                    var value = (int)(((BigInteger)quantizedArray[i] >> (j * 8)) & 255) * commpressAmount;
+                    var value = (int)(((BigInteger)quantizedArray[i] >> (j * 8)) & 255) * commpressAmount + min;
                     unpackedArrays[j][i] = (int)value;
                 }
             }
@@ -209,23 +210,29 @@ namespace quantizePst
         }
 
         // Function to get new piece values so that the psts minimum value is 0
-        public static int[] getNewPieceValues(int[] pieceVal)
+        public static int[] getNewPieceValues(int[] pieceVal, int min)
         {
             var newPieceVal = new int[pieceVal.Length];
-            for (var i = 0; i < newPieceVal.Length; i++) newPieceVal[i] = pieceVal[i] + PstsArray[i].Min();
+            for (var i = 0; i < newPieceVal.Length; i++) newPieceVal[i] = pieceVal[i] + min;
 
             return newPieceVal;
         }
-
         public static void Main(string[] args)
         {
+            //find smallest number in psts array
+            min = PstsArray[0].Min();
+            for (var i = 0; i < PstsArray.Length; i++)
+            {
+                if (PstsArray[i].Min() < min) min = PstsArray[i].Min();
+            }
+            // convert from int to byte
             var bytePestoArray = new byte[PstsArray.Length][];
             for (var i = 0; i < bytePestoArray.Length; i++)
             {
                 bytePestoArray[i] = new byte[PstsArray[i].Length];
                 for (var j = 0; j < bytePestoArray[i].Length; j++)
                     // compressing the values by dividing by 1.461 and then casting to byte
-                    bytePestoArray[i][j] = (byte)((PstsArray[i][j] - PstsArray[i].Min()) / commpressAmount);
+                    bytePestoArray[i][j] = (byte)((PstsArray[i][j] - min) / commpressAmount);
             }
 
             var quantizedArray = QuantizeToDecimal(bytePestoArray);
@@ -254,7 +261,7 @@ namespace quantizePst
                 Console.WriteLine();
             }
 
-            pieceVal = getNewPieceValues(pieceVal);
+            pieceVal = getNewPieceValues(pieceVal, min);
             Console.Write("new piece values: ");
             for (var i = 0; i < pieceVal.Length; i++) Console.Write("{0}, ", pieceVal[i]);
         }
